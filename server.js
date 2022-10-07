@@ -7,7 +7,7 @@ other source
 *
 * Name: Nolan Smith Student ID: 101664217 Date: OCT 5, 2022
 *
-* Your app’s URL (from Cyclic) : ______________________________________________
+* Your app’s URL (from Cyclic) : https://gorgeous-rose-salamander.cyclic.app
 *
 *************************************************************************/
 
