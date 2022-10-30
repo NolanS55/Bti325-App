@@ -48,6 +48,10 @@ app.get("/about", (req, res) => {
 });
 
 //employees Routes
+app.get("/employees/add", (req, res) => {
+    res.sendFile(__dirname + '/views/addEmployee.html');
+});
+
 app.get("/employees/:status?/:department?/:manager?", (req, res) => {
     if(req.query.status != null) {
         service.getEmployeesByStatus(req.query.status).then((data) => {res.send(data)}).catch((err) => res.send({message: err}))
@@ -74,10 +78,6 @@ app.get("/departments", (req, res) => {
 
 app.get("/managers", (req, res) => {
     service.getManagers().then((data) => {res.send(data)}).catch((err) => res.send({message : err}))
-});
-
-app.get("/employees/add", (req, res) => {
-    res.sendFile(__dirname + '/views/addEmployee.html');
 });
 
 app.get("/images/add", (req, res) => {
