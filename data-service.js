@@ -46,3 +46,61 @@ module.exports. getAllDepartments = function () {
         resolve(departments)
     })
 }
+
+module.exports. addEmployee = function (employeeData) {
+    return new Promise((resolve, reject) => {
+        if(employeeData.isManager == null) employeeData.isManager = false
+        else employeeData.isManager = true
+        employeeData.employeeNum = employees.length + 1
+        employees.push(employeeData)
+        console.log(employeeData)
+        resolve()
+    })
+}
+
+module.exports. getEmployeesByStatus = function (status) {
+    return new Promise((resolve, reject)=> {
+        let statuses = []
+        for(let i = 0; i < employees.length; i++) {
+            if(employees[i].status == status) statuses.push(employees[i])
+        }
+        if(statuses.length === 0) reject("No Employees found")
+        resolve(statuses)
+    })
+}
+
+module.exports. getEmployeesByDepartment = function (department) {
+    return new Promise((resolve, reject)=> {
+        let empDepartments = []
+        for(let i = 0; i < employees.length; i++) {
+            if(employees[i].department == department) empDepartments.push(employees[i])
+        }
+        if(empDepartments.length === 0) reject("No Employees found")
+        resolve(empDepartments)
+    })
+}
+
+module.exports. getEmployeesByManager = function (manager) {
+    return new Promise((resolve, reject)=> {
+        let empManagers = []
+        for(let i = 0; i < employees.length; i++) {
+            if(employees[i].employeeManagerNum == manager) empManagers.push(employees[i])
+        }
+        if(empManagers.length === 0) reject("No Employees found")
+        resolve(empManagers)
+    })
+}
+
+module.exports. getEmployeesByNum = function (num) {
+    return new Promise((resolve, reject)=> {
+        let empNum = []
+        for(let i = 0; i < employees.length; i++) {
+            if(employees[i].employeeNum == num) empNum.push(employees[i])
+        }
+        if(empNum.length === 0) reject("No Employees found")
+        resolve(empNum)
+    })
+}
+
+
+
