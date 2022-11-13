@@ -58,6 +58,19 @@ module.exports. addEmployee = function (employeeData) {
     })
 }
 
+module.exports. updateEmployee = function(employeeData) {
+    return new Promise((resolve, reject) => {
+        let index = -1;
+        for(let i = 0; i < employees.length; i++) {
+            if(employees[i].employeeNum === employeeData.employeeNum) {
+                index = i
+            }
+        }
+        employees[index] = employeeData;
+        resolve()
+    })
+}
+
 module.exports. getEmployeesByStatus = function (status) {
     return new Promise((resolve, reject)=> {
         let statuses = []

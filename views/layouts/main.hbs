@@ -6,8 +6,7 @@
       <meta http-equiv="X-UA-Compatible" content="ie=edge">
       <!-- Latest compiled and minified Bootstrap 3.3.7 CSS -->
       <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-      <link rel="stylesheet" href="css/site.css" type="text/css" />
-      <title>Add Image</title>
+      <title>Home</title>
   </head>
   <body>
     <nav class="navbar navbar-default">
@@ -26,50 +25,25 @@
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
           <ul class="nav navbar-nav">
-            <li ><a href="/">Home</a></li>
-            <li><a href="/about">About</a></li>
-            <li ><a href="/employees/add">Add Employee</a></li>
-            <li class="active"><a href="/images/add">Add Image</a></li>
+            {{#navLink "/"}}Home{{/navLink}}
+            {{#navLink "/about"}}About{{/navLink}}
+            {{#navLink "/employees/add"}}Add Employee{{/navLink}}
+            {{#navLink "/images/add"}}Add Image{{/navLink}}
           </ul>
           <ul class="nav navbar-nav navbar-right">
-            <li><a href="/images">Images</a></li>
-            <li><a href="/employees">Employees</a></li>
-            <li><a href="/managers">Managers</a></li>
-            <li><a href="/departments">Departments</a></li>
+            {{#navLink "/images"}}Images{{/navLink}}
+            {{#navLink "/employees"}}Employees{{/navLink}}
+            {{#navLink "/managers"}}Managers{{/navLink}}
+            {{#navLink "/departments"}}Departments{{/navLink}}
           </ul>
         </div><!-- /.navbar-collapse -->
       </div><!-- /.container-fluid -->
     </nav>
     <div class="container">
-        <div class="row">
-        <div class="col-md-12">
-    
-            <h2>Add Image</h2>
-
-            <br />
-    
-            <form method="post" action="/images/add" enctype="multipart/form-data">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="form-group">
-                                <label for="firstName">Image File:</label>
-                                <input class="form-control" id="imageFile" name="imageFile" type="file" />
-                            </div>
-                        </div>
-                    </div>
-
-                <hr />
-    
-                <input type="submit" class="btn btn-primary pull-right" value="Add Image" /><br /><br /><br />
-    
-            </form>
-        </div>
+      {{{body}}}
     </div>
-    </div>
-
     <!-- Latest compiled and minified jQuery 3.2.1 JavaScript -->
     <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="crossorigin="anonymous"></script>
-
     <!-- Latest compiled and minified Bootstrap 3.3.7 JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
   </body>
