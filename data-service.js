@@ -34,10 +34,10 @@ let Employee = sequelize.define('Employee', {
     hireDate: Sequelize.STRING,
   });
   
-  let Departments = sequelize.define('Department', {
+let Departments = sequelize.define('Departments', {
     departmentID: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true},
     departmentName: Sequelize.STRING,
-  });
+});
 
 
 module.exports. initialize = function () {
@@ -154,7 +154,7 @@ module.exports. getEmployeesByNum = function (num) {
             resolve(data)
         }
         else {
-            reject("no results found")
+            reject("No results returned")
         }
     })
 }
@@ -176,7 +176,7 @@ module.exports. getDepartmentById = function(id) {
             data = Departments.findAll({where: {departmentID : id}})
             resolve(data)
         }
-        reject("No results Returned")  
+        reject("No results returned")  
     })
 }
 

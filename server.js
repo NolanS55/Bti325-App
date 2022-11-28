@@ -166,10 +166,6 @@ app.post("/employee/update", (req, res) => {
     res.redirect("/employees");
 });
 
-app.post("/departments/update", (req, res) => {
-    service.updateDepartment(req.body);
-    res.redirect("/departments");
-})
 
 app.get("/departments/add", (req, res) => {
     res.render('addDepartment');
@@ -184,6 +180,11 @@ app.post("/departments/add", (req, res) => {
 
 app.get("/departments/:departmentId", (req, res) => {
     service.getDepartmentById(req.params.departmentId).then((data) => res.render("department", { department : data })).catch((err) => {res.status(404).send("Department Not Found");})
+})
+
+app.post("/departments/update", (req, res) => {
+    service.updateDepartment(req.body);
+    res.redirect("/departments");
 })
 
 
