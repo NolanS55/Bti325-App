@@ -7,7 +7,7 @@ other source
 *
 * Name: Nolan Smith Student ID: 101664217 Date: OCT 30, 2022
 *
-* Your app’s URL (from heroku) : https://mysterious-oasis-45796.herokuapp.com/
+* Your app’s URL (from cyclic) : https://gorgeous-rose-salamander.cyclic.app
 *
 *************************************************************************/
 var HTTP_PORT = process.env.PORT || 8080;
@@ -18,9 +18,19 @@ var multer = require("multer")
 var path = require('path')
 var fs = require('fs');
 var exphbs = require('express-handlebars')
+var dataServiceAuth = require("./data-service-auth.js")
+var clientSessions = require('client-sessions')
 const e = require("express");
 
 app.use(express.json());
+
+app.use(clientSessions({
+    cookieName: "session", 
+    secret: "pelDLalFOWPDFNVMajkdkf", 
+    duration: 2 * 60 * 1000, 
+    activeDuration: 1000 * 60 
+  }));
+
 app.use(express.urlencoded({extended: true}));
 
 app.engine('.hbs', exphbs.engine({ 
@@ -64,6 +74,19 @@ app.use(function(req,res,next){
     next();
 })
 
+app.use(function(req, res, next) {
+    res.locals.session = req.session;
+    next();
+});
+   
+function ensureLogin(req, res, next) {
+    if (!req.session.user) {
+      res.redirect("/login");
+    } else {
+      next();
+    }
+}
+
 // setup a 'route' to listen on the default url path
 app.get("/", (req, res, next) => {
     res.render('home');
@@ -74,15 +97,15 @@ app.get("/about", (req, res) => {
 });
 
 //employees Routes
-app.get("/employees/add", (req, res) => {
+app.get("/employees/add",  ensureLogin, (req, res) => {
     service.getDepartments().then((data) => {res.render('addEmployee', {departments : data})}).catch(() => {res.render('addEmployee', {departments : []})});
 });
 
-app.get("/employees/delete/:empNum", (req, res) => {
+app.get("/employees/delete/:empNum",  ensureLogin, (req, res) => {
     service.deleteEmployeeByNum(req.params.empNum).then(() => {res.redirect("/employees")}).catch(() => res.status(500).send("Unable to remove employee"))
 })
 
-app.get("/employees/:status?/:department?/:manager?", (req, res) => {
+app.get("/employees/:status?/:department?/:manager?", ensureLogin, (req, res) => {
     if(req.query.status != null) {
         service.getEmployeesByStatus(req.query.status).then((data) => { if(data.length > 0) {res.render('employees', {employees : data})} else{res.render('employees', {message : "no results"})}}).catch((err) => {res.render('employees', {message : err})})
     }
@@ -98,7 +121,7 @@ app.get("/employees/:status?/:department?/:manager?", (req, res) => {
     
 });
 
-app.get("/employee/:empNum", (req, res) => {
+app.get("/employee/:empNum", ensureLogin, (req, res) => {
     // initialize an empty object to store the values
     let viewData = {};
     service.getEmployeesByNum(req.params.empNum).then((data) => {
@@ -131,18 +154,18 @@ app.get("/employee/:empNum", (req, res) => {
     });
 });
 
-app.get("/departments", (req, res) => {
+app.get("/departments", ensureLogin, (req, res) => {
     service.getDepartments().then((data) => {if(data.length > 0) {res.render('departments', {departments : data})} else{res.render('departments', {message : "no results"})}}).catch((err) => {res.render('departments', {message : err})})
 });
 
-app.get("/managers", (req, res) => {
+app.get("/managers", ensureLogin, (req, res) => {
     service.getManagers().then((data) => {res.send(data)}).catch((err) => res.send({message : err}))
 });
-app.get("/images/add", (req, res) => {
+app.get("/images/add", ensureLogin, (req, res) => {
     res.render('addImage');
 });
 
-app.get("/images", (req, res) => {
+app.get("/images",  ensureLogin,(req, res) => {
     fs.readdir(__dirname + '/public/images/uploaded', (err, files) => {
         if (err)
           res.send(err);
@@ -152,41 +175,78 @@ app.get("/images", (req, res) => {
     })
 })
 
-app.post("/images/add", upload.single("imageFile"), (req, res) => {
+app.post("/images/add", ensureLogin, upload.single("imageFile"), (req, res) => {
     res.redirect("/images")
 });
 
-app.post("/employees/add", (req, res) => {
+app.post("/employees/add", ensureLogin, (req, res) => {
     service.addEmployee(req.body)
     res.redirect("/employees")
 })
 
-app.post("/employee/update", (req, res) => {
+app.post("/employee/update",  ensureLogin,(req, res) => {
     service.updateEmployee(req.body);
     res.redirect("/employees");
 });
 
 
-app.get("/departments/add", (req, res) => {
+app.get("/departments/add",  ensureLogin,(req, res) => {
     res.render('addDepartment');
 })
 
-app.post("/departments/add", (req, res) => {
+app.post("/departments/add", ensureLogin, (req, res) => {
     service.addDepartment(req.body)
     res.redirect("/departments")
 })
 
-
-
-app.get("/departments/:departmentId", (req, res) => {
+app.get("/departments/:departmentId", ensureLogin, (req, res) => {
     service.getDepartmentById(req.params.departmentId).then((data) => res.render("department", { department : data })).catch((err) => {res.status(404).send("Department Not Found");})
 })
 
-app.post("/departments/update", (req, res) => {
+app.post("/departments/update",  ensureLogin,(req, res) => {
     service.updateDepartment(req.body);
     res.redirect("/departments");
 })
 
+//login routes
+app.get("/login", (req,res) => {
+    res.render('login')
+})
+
+app.get("/register", (req,res) => {
+    res.render('register')
+})
+
+app.post("/login", (req,res) => {
+    req.body.userAgent = req.get('User-Agent');
+    dataServiceAuth.checkUser(req.body).then((user) => {
+        req.session.user = {
+            userName: user.userName, 
+            email: user.email, 
+            loginHistory: user.loginHistory 
+        }
+        res.redirect('/employees');
+    }).catch((err) => {
+        res.render('login', {errorMessage: err, userName: req.body.userName})
+    })
+})
+
+app.post("/register", (req, res) => {
+    dataServiceAuth.registerUser(req.body).then((data) => {
+        res.render('register', {successMessage: "User Created"})
+    }).catch((err) => {
+        res.render('register', {errorMessage: err, userName : req.body.userName})
+    })
+})
+
+app.get("/logout", (req,res) => {
+    req.session.reset();
+    res.redirect('/')
+})
+
+app.get("/userHistory", ensureLogin, (req, res) => {
+    res.render("userHistory")
+})
 
 
 // setup http server to listen on HTTP_PORT, PUT NOTHING BELOW THIS
@@ -194,4 +254,12 @@ app.use((req, res, next) => {
     res.status(404).send("Page Not Found")
 })
 
-service.initialize().then(() => {app.listen(HTTP_PORT, onHttpStart)}).catch(() => {console.log("Error Starting Server")})
+service.initialize()
+.then(dataServiceAuth.initialize)
+.then(function(){
+ app.listen(HTTP_PORT, function(){
+ console.log("app listening on: " + HTTP_PORT)
+ });
+}).catch(function(err){
+ console.log("unable to start server: " + err);
+});
